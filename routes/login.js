@@ -18,7 +18,7 @@ const shuffleArray = (array) => {
   }
 
   return array;
-};
+}; 
 
 module.exports = (unsplash) => {
   // @route POST api/login
@@ -35,12 +35,11 @@ module.exports = (unsplash) => {
     User.findOne({ email: email }).then((user) => {
       if (user) {
         const iterationNum = req.body.iterationNum;
-        console.log(iterationNum);
         if (iterationNum === 0) {
           return res.status(200).json({ images: user.firstSet, caption: user.captions[0] });
         } else if (iterationNum === TOTAL_ITERATIONS) {
 
-          console.log("last");
+
 
           const passwordHash = req.body.passwordHash;
           if (passwordHash === user.passwordHash) {
@@ -54,14 +53,12 @@ module.exports = (unsplash) => {
           const caption = user.captions[iterationNum]
 
           let imageCount = NUM_IMAGES_PER_SET;
-          console.log("key", key);
-          console.log("image", encryptedImage);
           let imageUrl = "";
           try {
             imageUrl = decryptImage(encryptedImage, key);
           } catch (error) {
             imageUrl = encryptedImage;
-            console.log("couldn't decrypt");
+            console.log(error);
           }
           fetch(imageUrl)
             .then(() => {

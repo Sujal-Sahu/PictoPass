@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../model/User.js");
-
+const decryptImage = require("../utils/decryption");
 require("dotenv").config();
 const NUM_IMAGES_PER_SET = process.env.NUM_IMAGES_PER_SET;
 
@@ -32,7 +32,7 @@ module.exports = (unsplash) => {
     const userData = req.body;
     User.findOne({ email: userData.email })
       .then((user) => {
-        if (user) {
+        if (user) { 
           return res.status(200).json({ msg: "user already exists" });
         }
         let imageLinks = [];
@@ -50,23 +50,29 @@ module.exports = (unsplash) => {
                 imageLinks.push(newLink);
               }
 
-              console.log("userdata", userData);
-
-              imageLinks.push(userData.images[0]);
+              const key = process.env.KEY;
+          const encryptedImage = userData.encryptedImages[0];
+          let imageUrl = "";
+          try {
+            imageUrl = decryptImage(encryptedImage, key);
+          } catch (error) {
+            imageUrl = encryptedImage;
+            console.log(error);
+          }
+              imageLinks.push(imageUrl);
               shuffleArray(imageLinks);
               console.log(imageLinks);
               const newUser = new User({
                 name: userData.name,
                 email: userData.email,
                 firstSet: imageLinks,
-                images: userData.images.slice(1, userData.images.length),
+                images: userData.encryptedImages.slice(1, userData.encryptedImages.length),
                 captions: userData.captions,
                 passwordHash: userData.passwordHash,
               });
               newUser
                 .save()
                 .then(() => {
-                  console.log(userData.captions);
                   console.log("new user saved");
                   return res.status(200).json({ msg: "registeration successful" });
                 })
