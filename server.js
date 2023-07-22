@@ -56,6 +56,9 @@ const unsplash = createApi({
 
 //routes
 app.use(require("./routes/index")(unsplash));
+app.get('/',(req,res)=>{
+  res.send("Hello");
+})
 
 //listen
-app.listen(PORT, () => console.log(`Server up and running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server up and running on port ${PORT}`));
