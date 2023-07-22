@@ -16,6 +16,13 @@ const app = express();
 //cors
 app.use(cors());
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Replace this with the origin of your client-side application in production.
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
